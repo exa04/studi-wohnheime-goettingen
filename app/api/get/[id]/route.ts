@@ -1,7 +1,7 @@
 import { Dorm, HousingType } from "@/lib/types";
 import cheerio from "cheerio";
 import axios from "axios";
-import { get_all } from "../../search/route";
+import { all_dorms } from "@/lib/search";
 
 export async function GET(
   request: Request,
@@ -12,7 +12,7 @@ export async function GET(
 }
 
 async function getDorm(id: number): Promise<Dorm> {
-  const web_link = get_all()[id].web_link;
+  const web_link = all_dorms[id].web_link;
 
   let dorm: Dorm = {
     id,

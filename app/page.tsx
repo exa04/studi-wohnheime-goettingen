@@ -35,12 +35,11 @@ import {
   useRef,
   useState,
 } from "react";
-import { get_all } from "@/app/api/search/route";
+import { all_dorms } from "@/lib/search";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
-  const results_all = get_all();
-  const [results, set_results] = useState(results_all);
+  const [results, set_results] = useState(all_dorms);
 
   const [slideover_open, set_slideover_open] = useState(false);
   const [focussed_dorm, setFocussedDorm] = useState(-1);
@@ -222,7 +221,7 @@ type SlideoverRef = {
   close(): void;
 };
 
-const Slideover = forwardRef((props: { id: number }, ref) => {
+const Slideover = forwardRef(function Slideover(props: { id: number }, ref) {
   const [dorm, setState] = useState(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);

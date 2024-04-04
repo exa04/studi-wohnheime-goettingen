@@ -1,113 +1,378 @@
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ModeToggle } from "@/components/ui/dark-mode-toggle";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Slider } from "@/components/ui/slider";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  ArrowLeftIcon,
+  ExternalLinkIcon,
+  ListBulletIcon,
+  PinTopIcon,
+} from "@radix-ui/react-icons";
 import Image from "next/image";
 
 export default function Home() {
+  const apartments: Array<Apartment> = [
+    {
+      id: 0,
+      name: "",
+      summary: "",
+      address: "",
+      coordinates: [0, 0],
+      web_link: "",
+      housing: [],
+      images: [],
+      facilities: [],
+      parking_spots: [],
+    },
+  ];
+
+  let filtered_apartments = apartments;
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <div>
+      <div className="fixed left-0 top-0 z-50 box-border flex h-svh w-full max-w-xs flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="flex h-14 shrink-0 items-center border-b border-zinc-200 px-6 dark:border-zinc-800">
+          <div className="flex w-full items-center justify-between gap-2">
+            <h1 className="grow font-bold">Studi-Wohnheime</h1>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <ListBulletIcon />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[400px] sm:w-[540px]">
+                <SheetHeader>
+                  <SheetTitle>Filter</SheetTitle>
+                  <SheetDescription>
+                    <div className="mb-4 font-semibold">Wohnform</div>
+                    <div className="mb-6 space-y-4">
+                      <div className="items-top flex space-x-2">
+                        <Checkbox id="group" />
+                        <div className="grid gap-1.5 leading-none">
+                          <label
+                            htmlFor="group"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Gruppenwohnung
+                          </label>
+                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            Teile eine Wohnung mit verschiedenen,
+                            durchwechselnden Studis.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="items-top flex space-x-2">
+                        <Checkbox id="single" />
+                        <div className="grid gap-1.5 leading-none">
+                          <label
+                            htmlFor="single"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Einzelappartement
+                          </label>
+                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            Dein eigenes Appartement
+                          </p>
+                        </div>
+                      </div>
+                      <div className="items-top flex space-x-2">
+                        <Checkbox id="double" />
+                        <div className="grid gap-1.5 leading-none">
+                          <label
+                            htmlFor="double"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            2er-Gruppenwohnung
+                          </label>
+                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            Eine Wohnung für dich und eine weitere Person
+                          </p>
+                        </div>
+                      </div>
+                      <div className="items-top flex space-x-2">
+                        <Checkbox id="couple" />
+                        <div className="grid gap-1.5 leading-none">
+                          <label
+                            htmlFor="couple"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Doppelappartement
+                          </label>
+                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            Für Einzelpersonen oder Paare
+                          </p>
+                        </div>
+                      </div>
+                      <div className="items-top flex space-x-2">
+                        <Checkbox id="family" />
+                        <div className="grid gap-1.5 leading-none">
+                          <label
+                            htmlFor="family"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Familienwohnung
+                          </label>
+                          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                            Für deine Familie
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="mb-4 font-semibold">Ausstattung</div>
+                    <div className="mb-6 space-y-4">
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="furnishment">Möblierung</Label>
+                        <Select name="furnishment">
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Egal" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Egal</SelectItem>
+                            <SelectItem value="true">Möbliert</SelectItem>
+                            <SelectItem value="false">Unmöbliert</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label htmlFor="furnishment">Parkplätze</Label>
+                        <Select name="furnishment">
+                          <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Egal" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Egal</SelectItem>
+                            <SelectItem value="true">Vorhanden</SelectItem>
+                            <SelectItem value="false">
+                              Nicht vorhanden
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="mb-4 font-semibold">Miete</div>
+                    <Slider defaultValue={[600]} min={200} max={600} step={1} />
+                  </SheetDescription>
+                </SheetHeader>
+              </SheetContent>
+            </Sheet>
+            <ModeToggle />
+          </div>
+        </div>
+        <ResultList apartments={filtered_apartments} />
+      </div>
+      {/* <Slideover /> */}
+      <div className="h-screen w-screen bg-zinc-500"></div>
+    </div>
+  );
+}
+
+function Slideover() {
+  return (
+    <div className="fixed left-80 z-10 box-border h-svh w-full max-w-lg bg-white shadow-2xl dark:bg-zinc-900">
+      <div className="sticky z-20 flex h-12 w-full items-center justify-between border-b border-zinc-300/50 bg-zinc-50 px-2 dark:border-zinc-800 dark:bg-zinc-950">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" color="blue">
+            <ArrowLeftIcon className="h-[1.2rem] w-[1.2rem]" />
+          </Button>
+          <h2 className="font-bold">Johanniskirchhof/Paulinerstraße</h2>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon">
+            <ExternalLinkIcon className="h-[1.2rem] w-[1.2rem]" />
+          </Button>
+          <Button>Bewerben</Button>
         </div>
       </div>
+      <ScrollArea className="h-full">
+        <Dialog>
+          <DialogTrigger>
+            <img
+              src="https://www.studentenwerk-goettingen.de/fileadmin/Inhalte/Seiten/Studentisches-Wohnen/Wohnheime/Albrecht_Thaer_Weg_6-26.jpg"
+              className="aspect-[3/2] w-full object-cover"
+            />
+          </DialogTrigger>
+          <DialogContent className="h-full max-h-[90svh] w-full max-w-[90svw] overflow-hidden border-0 p-0">
+            <img
+              src="https://www.studentenwerk-goettingen.de/fileadmin/Inhalte/Seiten/Studentisches-Wohnen/Wohnheime/Albrecht_Thaer_Weg_6-26.jpg"
+              className="h-full w-full object-cover"
+            />
+          </DialogContent>
+        </Dialog>
+        <div className="space-y-4 px-6 py-6">
+          <p className="text-zinc-600 dark:text-zinc-400">
+            Die größte studentische Wohnanlage in Göttingen bietet 832
+            Wohnplätze (Zimmer und Wohnungen) in verschiedenen Wohnformen an.
+            Die ruhige Lage, große Grünflächen und ein umfangreiches
+            Freizeitangebot zeichnen diese Wohnanlage aus. Dennoch sind
+            Zentralcampus und Innenstadt in nur ca. 5 Minuten mit dem Fahrrad zu
+            erreichen.
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <Dialog>
+              <DialogTrigger>
+                <img
+                  src="https://www.studentenwerk-goettingen.de/fileadmin/_processed_/8/4/csm_Gutenbergstrasse_2-42_50750145da.jpg"
+                  className="aspect-[3/2] rounded object-cover"
+                />
+              </DialogTrigger>
+              <DialogContent className="h-full max-h-[90svh] w-full max-w-[90svw] overflow-hidden border-0 p-0">
+                <img
+                  src="https://www.studentenwerk-goettingen.de/fileadmin/_processed_/8/4/csm_Gutenbergstrasse_2-42_50750145da.jpg"
+                  className="h-full w-full object-cover"
+                />
+              </DialogContent>
+            </Dialog>
+            <Dialog>
+              <DialogTrigger>
+                <img
+                  src="https://www.studentenwerk-goettingen.de/fileadmin/_processed_/4/f/csm_Gutenbergstrasse_2-42_Aussenansicht_d64ed3876e.jpg"
+                  className="aspect-[3/2] rounded object-cover"
+                />
+              </DialogTrigger>
+              <DialogContent className="h-full max-h-[90svh] w-full max-w-[90svw] overflow-hidden border-0 p-0">
+                <img
+                  src="https://www.studentenwerk-goettingen.de/fileadmin/_processed_/4/f/csm_Gutenbergstrasse_2-42_Aussenansicht_d64ed3876e.jpg"
+                  className="h-full w-full object-cover"
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
+          <Button variant="link" className="mr-4 gap-2 px-0">
+            <ExternalLinkIcon />
+            In Google Maps anzeigen
+          </Button>
+          <Button variant="link" className="gap-2 px-0">
+            <ExternalLinkIcon />
+            Original anzeigen
+          </Button>
+          <h3 className="text-2xl font-bold">Wohnformen</h3>
+          <p className="text-zinc-600 dark:text-zinc-400">
+            Dieses Wohnheim bietet 4 verschiedene Wohnformen an. W&auml;hle eine
+            aus, um mehr zu ihr zu erfahren.
+          </p>
+          <h3 className="text-2xl font-bold">Ausstattung</h3>
+          <h3 className="text-2xl font-bold">Parkmöglichkeiten</h3>
+        </div>
+      </ScrollArea>
+    </div>
+  );
+}
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+function ListResult(props: {
+  waiting_period: String;
+  rent: String;
+  residential_types: String[];
+}) {
+  return (
+    <div
+      className="pointer relative w-full items-stretch space-y-1 border-b border-zinc-200 px-6 py-4 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-900"
+      role="button"
+    >
+      <div className="font-semibold">Albrecht-Thaer-Weg 8-26</div>
+      <div className="text-zinc-600 dark:text-zinc-400">
+        {props.waiting_period} Wartezeit
+        <br />
+        {props.rent}€ Miete
+      </div>
+      <div className="text-sm text-zinc-600 dark:text-zinc-400">
+        {props.residential_types.map((type, i) => (
+          <p key={i}>{type}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+enum HousingType {
+  GROUP,
+  SINGLE,
+  DOUBLE,
+  COUPLE,
+  FAMILY,
+}
+
+type Housing = {
+  housing_type: HousingType;
+  room_count: Number;
+  room_size: String;
+  rent: Number | [Number, Number];
+  wating_period: [Number, Number];
+  furnished: boolean;
+  facilities: Array<String>;
+  notices: Array<String>;
+};
+
+type Apartment = {
+  id: Number;
+  name: String;
+  summary: String;
+  address: String;
+  coordinates: [Number, Number];
+  web_link: String;
+  housing: Array<Housing>;
+  images: Array<String>;
+  facilities: Array<String>;
+  parking_spots: Array<String>;
+};
+
+function ResultList(props: { apartments: Array<Apartment> }) {
+  return (
+    <ScrollArea className="h-full shrink">
+      {[
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ].map((e) => (
+        <ListResult
+          key={e}
+          waiting_period="8-11 Mo"
+          rent="221-383"
+          residential_types={[
+            "Gruppenwohnungen-Zimmer",
+            "Einzelappartments",
+            "Doppelapartments",
+          ]}
         />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      ))}
+    </ScrollArea>
   );
 }

@@ -1,25 +1,10 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ModeToggle } from "@/components/ui/dark-mode-toggle";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -37,143 +22,74 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Slider } from "@/components/ui/slider";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Dorm, DormResult, HousingType } from "@/lib/types";
 import {
   ArrowLeftIcon,
   ExternalLinkIcon,
   ListBulletIcon,
-  PinTopIcon,
 } from "@radix-ui/react-icons";
-import Image from "next/image";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { get_all } from "@/app/api/search/route";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
-  const apartment_results: Array<DormResult> = [
-    {
-      id: 0,
-      name: "Beispielwohnung 123",
-      coordinates: [0, 10],
-      housing_types: [HousingType.COUPLE, HousingType.SINGLE],
-      rent: [20, 30],
-      waiting_period: 12,
-    },
-    {
-      id: 1,
-      name: "Noch was",
-      coordinates: [0, 10],
-      housing_types: [
-        HousingType.GROUP,
-        HousingType.DOUBLE,
-        HousingType.SINGLE,
-      ],
-      rent: [20, 30],
-      waiting_period: 12,
-    },
-    {
-      id: 2,
-      name: "Beispielwohnung 123",
-      coordinates: [0, 10],
-      housing_types: [HousingType.COUPLE],
-      rent: [20, 30],
-      waiting_period: 12,
-    },
-  ];
+  const results_all = get_all();
+  const [results, set_results] = useState(results_all);
+
+  const [slideover_open, set_slideover_open] = useState(false);
+  const [focussed_dorm, setFocussedDorm] = useState(-1);
+
+  const slideover = useRef<SlideoverRef>(null);
+  function openSlideover(id: number) {
+    setFocussedDorm(id);
+    slideover.current?.open();
+  }
 
   return (
     <div>
-      <div className="fixed bottom-0 left-0 z-50 box-border flex h-[50svh] w-full flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 md:top-0 md:h-svh md:max-w-xs">
-        <div className="flex h-14 shrink-0 items-center border-b border-zinc-200 px-6 dark:border-zinc-800">
-          <div className="flex w-full items-center justify-between gap-2">
+      <div className="fixed bottom-0 left-0 z-20 box-border flex h-[50svh] w-full flex-col border-r border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900 md:top-0 md:h-svh md:max-w-xs">
+        <div className="flex h-16 shrink-0 items-center border-b border-zinc-200 bg-white bg-zinc-50 pl-6 pr-4 dark:border-zinc-800 dark:bg-zinc-950">
+          <div className="flex w-full items-center justify-between gap-1">
             <h1 className="grow font-bold">Studi-Wohnheime</h1>
             <FilterSheet />
             <ModeToggle />
           </div>
         </div>
-        <ResultList results={apartment_results} />
+        <ScrollArea className="h-full shrink">
+          {results.map((result) => (
+            <div
+              className="pointer relative w-full items-stretch space-y-1 border-b border-zinc-200 px-6 py-4 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800"
+              role="button"
+              key={result.id.toString()}
+              onClick={(e) => openSlideover(result.id)}
+            >
+              <div className="flex justify-between gap-1">
+                <div className="font-semibold">{result.name}</div>
+                <div>
+                  {Array.isArray(result.rent)
+                    ? result.rent[0] + " - " + result.rent[1]
+                    : result.rent.toString()}
+                  €
+                </div>
+              </div>
+              <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                {result.housing_types.map((type, i) => (
+                  <p key={i}>{type}</p>
+                ))}
+              </div>
+            </div>
+          ))}
+        </ScrollArea>
       </div>
-      {/* <Slideover /> */}
+      {focussed_dorm != -1 && <Slideover ref={slideover} id={focussed_dorm} />}
       <div className="h-screen w-screen bg-zinc-500"></div>
     </div>
-  );
-}
-
-enum HousingType {
-  GROUP = "Gruppenwohnung",
-  SINGLE = "Einzelappartment",
-  DOUBLE = "2er-Gruppen-WG",
-  COUPLE = "Doppelappartment",
-  FAMILY = "Familienwohnung",
-}
-
-type DormResult = {
-  id: Number;
-  name: string | undefined;
-  coordinates: [Number, Number];
-  housing_types: Array<HousingType>;
-  rent: Number | [Number, Number];
-  waiting_period: Number | [Number, Number];
-};
-
-type Dorm = {
-  id: Number;
-  name: string;
-  summary: string;
-  images: Array<string>;
-
-  address: string;
-  coordinates: [Number, Number];
-
-  web_link: string;
-
-  apartment_types: Array<{
-    housing_type: HousingType;
-    room_count: Number;
-    room_size: string;
-    rent: Number | [Number, Number];
-    wating_period: Number | [Number, Number];
-    furnished: boolean;
-    facilities: Array<string>;
-    notices: Array<string>;
-  }>;
-
-  facilities: Array<string>;
-  parking_spots: Array<string>;
-  waiting_period: [Number, Number];
-};
-
-function ResultList(props: { results: Array<DormResult> }) {
-  return (
-    <ScrollArea className="h-full shrink">
-      {props.results.map((result) => (
-        <div
-          className="pointer relative w-full items-stretch space-y-1 border-b border-zinc-200 px-6 py-4 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-900"
-          role="button"
-          key={result.id.toString()}
-        >
-          <div className="font-semibold">{result.name}</div>
-          <div className="text-zinc-600 dark:text-zinc-400">
-            {Array.isArray(result.waiting_period)
-              ? result.waiting_period[0] + " - " + result.waiting_period[1]
-              : result.waiting_period.toString()}{" "}
-            Monate Wartezeit
-            <br />
-            {Array.isArray(result.rent)
-              ? result.rent[0] + " - " + result.rent[1]
-              : result.rent.toString()}
-            € Miete
-          </div>
-          <div className="text-sm text-zinc-600 dark:text-zinc-400">
-            {result.housing_types.map((type, i) => (
-              <p key={i}>{type}</p>
-            ))}
-          </div>
-        </div>
-      ))}
-    </ScrollArea>
   );
 }
 
@@ -301,90 +217,171 @@ function FilterSheet() {
   );
 }
 
-function Slideover(props: { dorm: Dorm }) {
+type SlideoverRef = {
+  open(): void;
+  close(): void;
+};
+
+const Slideover = forwardRef((props: { id: number }, ref) => {
+  const [dorm, setState] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+
+  const [title, setTitle] = useState("");
+  const [summary, setSummary] = useState("");
+  const [web_link, setWebLink] = useState("");
+  const [apartment_types, setApartmentTypes] = useState(Array);
+  const [images, setImages] = useState<Array<string>>(Array);
+  const [address, setAddress] = useState("");
+
+  useImperativeHandle(ref, () => ({
+    open: () => {
+      setOpen(true);
+    },
+    close: () => {
+      setOpen(false);
+    },
+  }));
+
+  useEffect(() => {
+    setOpen(true);
+    setLoading(true);
+    const res = fetch(`/api/get/${props.id}`).then((res) => {
+      res.json().then((json: Dorm) => {
+        setTitle(json.name);
+        setSummary(json.summary);
+        setWebLink(json.web_link);
+        setApartmentTypes(json.apartment_types);
+        setImages(json.images);
+        setAddress(json.address);
+        setLoading(false);
+      });
+    });
+  }, [props.id]);
+
   return (
-    <div className="fixed left-80 z-10 box-border h-svh w-full max-w-lg bg-white shadow-2xl dark:bg-zinc-900">
-      <div className="sticky z-20 flex h-12 w-full items-center justify-between border-b border-zinc-300/50 bg-zinc-50 px-2 dark:border-zinc-800 dark:bg-zinc-950">
+    <div
+      data-open={open}
+      className="w-100svw fixed bottom-0 z-30 box-border h-[80svh] w-full bg-white shadow-2xl data-[open=false]:hidden dark:bg-zinc-900 md:top-0 md:h-svh md:max-w-lg lg:left-80 lg:z-10"
+    >
+      <div className="sticky z-20 flex h-16 w-full items-center justify-between border-b border-zinc-300/50 bg-zinc-50 px-4 dark:border-zinc-800 dark:bg-zinc-950">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" color="blue">
+          <Button
+            variant="ghost"
+            size="icon"
+            color="blue"
+            onClick={() => setOpen(false)}
+          >
             <ArrowLeftIcon className="h-[1.2rem] w-[1.2rem]" />
           </Button>
-          <h2 className="font-bold">
-            {props.dorm.name ? props.dorm.name : props.dorm.address}
-          </h2>
+          {loading ? (
+            <Skeleton className="h-4 w-[250px]" />
+          ) : title != address ? (
+            <h2>
+              <div className="-mb-1 font-bold">{title}</div>
+              <div className="text-sm text-zinc-600 dark:text-zinc-400">
+                {address}
+              </div>
+            </h2>
+          ) : (
+            <h2>
+              <div className="text-lg font-bold">{title}</div>
+            </h2>
+          )}
         </div>
         <div className="flex items-center gap-2">
-          <a
-            href="https://ipack.studentenwerk-goettingen.de/wohnheimaufnahmeantrag.html"
-            target="_blank"
-          >
+          <a href={web_link} target="_blank">
             <Button variant="ghost" size="icon">
               <ExternalLinkIcon className="h-[1.2rem] w-[1.2rem]" />
             </Button>
           </a>
-          <Button>Bewerben</Button>
+          <a
+            href="https://ipack.studentenwerk-goettingen.de/wohnheimaufnahmeantrag.html"
+            target="_blank"
+          >
+            <Button>Bewerben</Button>
+          </a>
         </div>
       </div>
       <ScrollArea className="h-full">
-        <Dialog>
-          <DialogTrigger>
-            <img
-              src={props.dorm.images[0]}
-              className="aspect-[3/2] w-full object-cover"
-              alt={
-                "Foto von " +
-                (props.dorm.name ? props.dorm.name : props.dorm.address)
-              }
-            />
-          </DialogTrigger>
-          <DialogContent className="h-full max-h-[90svh] w-full max-w-[90svw] overflow-hidden border-0 p-0">
-            <img
-              src="https://www.studentenwerk-goettingen.de/fileadmin/Inhalte/Seiten/Studentisches-Wohnen/Wohnheime/Albrecht_Thaer_Weg_6-26.jpg"
-              className="h-full w-full object-cover"
-              alt=""
-            />
-          </DialogContent>
-        </Dialog>
-        <div className="space-y-4 px-6 py-6">
-          <p className="text-zinc-600 dark:text-zinc-400">
-            {props.dorm.summary}
-          </p>
-          {props.dorm.images.length > 0 && (
-            <div className={`grid grid-cols-${props.dorm.images.length} gap-2`}>
-              {props.dorm.images.slice(1).map((src) => (
-                <Dialog key={src}>
-                  <DialogTrigger>
-                    <img
-                      src={src}
-                      className="aspect-[3/2] rounded object-cover"
-                    />
-                  </DialogTrigger>
-                  <DialogContent className="h-full max-h-[90svh] w-full max-w-[90svw] overflow-hidden border-0 p-0">
-                    <img src={src} className="h-full w-full object-cover" />
-                  </DialogContent>
-                </Dialog>
-              ))}
-            </div>
-          )}
-          <Button variant="link" className="mr-4 gap-2 px-0">
-            <ExternalLinkIcon />
-            In Google Maps anzeigen
-          </Button>
-          <a href={props.dorm.web_link}>
-            <Button variant="link" className="gap-2 px-0">
+        {loading ? (
+          <Skeleton className="aspect-[3/2] w-full !rounded-none" />
+        ) : (
+          images[0] != undefined && (
+            <Dialog>
+              <DialogTrigger>
+                <img
+                  src={images[0]}
+                  className="aspect-[3/2] w-full object-cover"
+                  alt={"Foto von " + title}
+                />
+              </DialogTrigger>
+              <DialogContent className="max-h-[90svh] max-w-[90svw] overflow-hidden border-0 p-0">
+                <img
+                  src={images[0]}
+                  className="h-full max-h-[90svh] w-full max-w-[90svw] object-contain"
+                  alt=""
+                />
+              </DialogContent>
+            </Dialog>
+          )
+        )}
+        {loading ? (
+          <div className="space-y-2 px-6 py-6">
+            <Skeleton className="h-4" />
+            <Skeleton className="h-4" />
+            <Skeleton className="h-4" />
+            <Skeleton className="h-4" />
+            <Skeleton className="h-4 w-[40%]" />
+          </div>
+        ) : (
+          <div className="space-y-4 px-6 py-6">
+            <div className="text-zinc-600 dark:text-zinc-400">{summary}</div>
+            {images.length > 0 && (
+              <div className={`grid grid-cols-${images.length} gap-2`}>
+                {images.length > 1 &&
+                  images.slice(1).map((src) => (
+                    <Dialog key={src}>
+                      <DialogTrigger>
+                        <img
+                          src={src}
+                          className="aspect-[3/2] rounded object-cover"
+                        />
+                      </DialogTrigger>
+                      <DialogContent className="h-full max-h-[90svh] w-full max-w-[90svw] overflow-hidden border-0 p-0">
+                        <img src={src} className="h-full w-full object-cover" />
+                      </DialogContent>
+                    </Dialog>
+                  ))}
+              </div>
+            )}
+            <Button variant="link" className="mr-4 gap-2 px-0">
               <ExternalLinkIcon />
-              Original anzeigen
+              In Google Maps anzeigen
             </Button>
-          </a>
-          <h3 className="text-2xl font-bold">Wohnformen</h3>
-          <p className="text-zinc-600 dark:text-zinc-400">
-            Dieses Wohnheim bietet 4 verschiedene Wohnformen an. W&auml;hle eine
-            aus, um mehr zu ihr zu erfahren.
-          </p>
-          <h3 className="text-2xl font-bold">Ausstattung</h3>
-          <h3 className="text-2xl font-bold">Parkmöglichkeiten</h3>
-        </div>
+            <a href={web_link} target="_blank">
+              <Button variant="link" className="gap-2 px-0">
+                <ExternalLinkIcon />
+                Original anzeigen
+              </Button>
+            </a>
+            <h3 className="text-2xl font-bold">Wohnformen</h3>
+            {loading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-4" />
+                <Skeleton className="h-4 w-[60%]" />
+              </div>
+            ) : (
+              <p className="text-zinc-600 dark:text-zinc-400">
+                Dieses Wohnheim bietet {apartment_types.length} verschiedene
+                Wohnformen an. W&auml;hle eine aus, um mehr zu ihr zu erfahren.{" "}
+              </p>
+            )}
+            <h3 className="text-2xl font-bold">Ausstattung</h3>
+            <h3 className="text-2xl font-bold">Parkmöglichkeiten</h3>
+          </div>
+        )}
       </ScrollArea>
     </div>
   );
-}
+});

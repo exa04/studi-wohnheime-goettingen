@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ import { Dorm, DormResult, HousingType } from "@/lib/types";
 import {
   ArrowLeftIcon,
   ExternalLinkIcon,
+  InputIcon,
   ListBulletIcon,
 } from "@radix-ui/react-icons";
 import {
@@ -52,8 +54,8 @@ export default function Home() {
 
   return (
     <div>
-      <div className="fixed bottom-0 left-0 z-20 box-border flex h-[50svh] w-full flex-col border-r border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900 md:top-0 md:h-svh md:max-w-xs">
-        <div className="flex h-16 shrink-0 items-center border-b border-zinc-200 bg-white bg-zinc-50 pl-6 pr-4 dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="fixed bottom-0 left-0 z-20 box-border flex h-[66svh] w-full flex-col border-r border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900 md:top-0 md:h-svh md:max-w-xs">
+        <div className="flex h-14 shrink-0 items-center border-b border-zinc-200 bg-white bg-zinc-50 pl-6 pr-4 dark:border-zinc-800 dark:bg-zinc-950 md:h-16">
           <div className="flex w-full items-center justify-between gap-1">
             <h1 className="grow font-bold">Studi-Wohnheime</h1>
             <FilterSheet />
@@ -70,7 +72,7 @@ export default function Home() {
             >
               <div className="flex justify-between gap-1">
                 <div className="font-semibold">{result.name}</div>
-                <div>
+                <div className="text-zinc-600 dark:text-zinc-400">
                   {Array.isArray(result.rent)
                     ? result.rent[0] + " - " + result.rent[1]
                     : result.rent.toString()}
@@ -98,6 +100,7 @@ function FilterSheet() {
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon">
           <ListBulletIcon />
+          <span className="sr-only">Filter</span>
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-[400px] sm:w-[540px]">
@@ -261,9 +264,9 @@ const Slideover = forwardRef(function Slideover(props: { id: number }, ref) {
   return (
     <div
       data-open={open}
-      className="w-100svw fixed bottom-0 z-30 box-border h-[80svh] w-full bg-white shadow-2xl data-[open=false]:hidden dark:bg-zinc-900 md:top-0 md:h-svh md:max-w-lg lg:left-80 lg:z-10"
+      className="w-100svw fixed top-0 z-30 box-border h-svh w-full bg-white shadow-2xl data-[open=false]:hidden dark:bg-zinc-900 md:max-w-lg lg:left-80 lg:z-10"
     >
-      <div className="sticky z-20 flex h-16 w-full items-center justify-between border-b border-zinc-300/50 bg-zinc-50 px-4 dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="sticky z-20 flex h-14 w-full items-center justify-between border-b border-zinc-300/50 bg-zinc-50 px-4 dark:border-zinc-800 dark:bg-zinc-950 md:h-16">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -283,9 +286,7 @@ const Slideover = forwardRef(function Slideover(props: { id: number }, ref) {
               </div>
             </h2>
           ) : (
-            <h2>
-              <div className="text-lg font-bold">{title}</div>
-            </h2>
+            <h2 className="font-bold leading-tight">{title}</h2>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -298,7 +299,10 @@ const Slideover = forwardRef(function Slideover(props: { id: number }, ref) {
             href="https://ipack.studentenwerk-goettingen.de/wohnheimaufnahmeantrag.html"
             target="_blank"
           >
-            <Button>Bewerben</Button>
+            <Button className="gap-2 max-sm:!px-3">
+              <InputIcon />
+              <span className="max-sm:hidden">Bewerben</span>
+            </Button>
           </a>
         </div>
       </div>
@@ -336,7 +340,7 @@ const Slideover = forwardRef(function Slideover(props: { id: number }, ref) {
         ) : (
           <div className="space-y-4 px-6 py-6">
             <div className="text-zinc-600 dark:text-zinc-400">{summary}</div>
-            {images.length > 0 && (
+            {images.length > 1 && (
               <div className={`grid grid-cols-${images.length} gap-2`}>
                 {images.length > 1 &&
                   images.slice(1).map((src) => (
@@ -345,10 +349,15 @@ const Slideover = forwardRef(function Slideover(props: { id: number }, ref) {
                         <img
                           src={src}
                           className="aspect-[3/2] rounded object-cover"
+                          alt="Weiteres Bild von dem Wohnheim"
                         />
                       </DialogTrigger>
                       <DialogContent className="h-full max-h-[90svh] w-full max-w-[90svw] overflow-hidden border-0 p-0">
-                        <img src={src} className="h-full w-full object-cover" />
+                        <img
+                          src={src}
+                          className="h-full w-full object-cover"
+                          alt=""
+                        />
                       </DialogContent>
                     </Dialog>
                   ))}

@@ -54,8 +54,8 @@ export default function Home() {
 
   return (
     <div>
-      <div className="fixed bottom-0 left-0 z-20 box-border flex h-[66svh] w-full flex-col border-r border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-900 md:top-0 md:h-svh md:max-w-xs">
-        <div className="flex h-14 shrink-0 items-center border-b border-zinc-200 bg-white bg-zinc-50 pl-6 pr-4 dark:border-zinc-800 dark:bg-zinc-950 md:h-16">
+      <div className="fixed bottom-0 left-0 z-20 box-border flex h-[66svh] w-full flex-col border-r border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-950 md:top-0 md:h-svh md:max-w-xs">
+        <div className="flex h-14 shrink-0 items-center border-b border-zinc-200 bg-zinc-50 pl-6 pr-4 dark:border-zinc-800 dark:bg-zinc-900 md:h-16">
           <div className="flex w-full items-center justify-between gap-1">
             <h1 className="grow font-bold">Studi-Wohnheime</h1>
             <FilterSheet />
@@ -264,9 +264,9 @@ const Slideover = forwardRef(function Slideover(props: { id: number }, ref) {
   return (
     <div
       data-open={open}
-      className="w-100svw fixed top-0 z-30 box-border h-svh w-full bg-white shadow-2xl data-[open=false]:hidden dark:bg-zinc-900 md:max-w-lg lg:left-80 lg:z-10"
+      className="w-100svw fixed top-0 z-30 box-border h-svh w-full bg-white shadow-2xl data-[open=false]:hidden dark:bg-zinc-950 md:max-w-lg lg:left-80 lg:z-10"
     >
-      <div className="sticky z-20 flex h-14 w-full items-center justify-between border-b border-zinc-300/50 bg-zinc-50 px-4 dark:border-zinc-800 dark:bg-zinc-950 md:h-16">
+      <div className="sticky z-20 flex h-14 w-full items-center justify-between border-b border-zinc-300/50 bg-zinc-50 px-4 dark:border-zinc-800 dark:bg-zinc-900 md:h-16">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"

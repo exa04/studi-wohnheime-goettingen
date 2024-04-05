@@ -277,7 +277,7 @@ const Slideover = forwardRef(function Slideover(props: { id: number }, ref) {
             <ArrowLeftIcon className="h-[1.2rem] w-[1.2rem]" />
           </Button>
           {loading ? (
-            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[120px] md:w-[250px]" />
           ) : title != address ? (
             <h2>
               <div className="-mb-1 font-bold">{title}</div>

@@ -54,14 +54,36 @@ async function getDorm(id: number): Promise<Dorm> {
 
   const inner_text = $(".content > div > .ce-textpic .ce-bodytext").children();
 
-  dorm.summary = inner_text.first().text();
-
   dorm.images = $(".content > div > .ce-textpic img")
     .map(
       (i: any, element: any) =>
         "https://www.studentenwerk-goettingen.de" + element.attribs.src,
     )
     .toArray();
+
+  let next = inner_text.first();
+  dorm.summary = next.text();
+  for (let i = 0; i < inner_text.length; i++) {
+    if (next.text().includes("Gemeinschaftseinrichtungen")) {
+      next
+        .next()
+        .children()
+        .each((i, el) => {
+          let text = $(el).text().trim().replace(/,\s*$/, "");
+          dorm.facilities.push(text.charAt(0).toUpperCase() + text.slice(1));
+        });
+    }
+    if (next.text().includes("Parkmöglichkeiten")) {
+      next
+        .next()
+        .children()
+        .each((i, el) => {
+          let text = $(el).text().trim().replace(/,\s*$/, "");
+          dorm.parking_spots.push(text.charAt(0).toUpperCase() + text.slice(1));
+        });
+    }
+    next = next.next();
+  }
 
   return dorm;
 }

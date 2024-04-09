@@ -149,12 +149,17 @@ export const Slideover = forwardRef(function Slideover(
                     <Dialog key={src}>
                       <DialogTrigger className="w-full shrink grow">
                         <img
+                          alt="Weiteres Foto von dem Wohnheim"
                           src={src}
                           className="aspect-[3/2] rounded object-cover outline outline-1 -outline-offset-1 outline-black/20 dark:outline-white/20"
                         />
                       </DialogTrigger>
                       <DialogContent className="h-full max-h-[90svh] w-full max-w-[90svw] overflow-hidden border-0 p-0">
-                        <img src={src} className="h-full w-full object-cover" />
+                        <img
+                          alt=""
+                          src={src}
+                          className="h-full w-full object-cover"
+                        />
                       </DialogContent>
                     </Dialog>
                   ))}
@@ -182,8 +187,8 @@ export const Slideover = forwardRef(function Slideover(
               <section className="space-y-1">
                 <h3 className="text-2xl font-bold">Ausstattung</h3>
                 <ul className="ml-6 list-disc text-zinc-600 dark:text-zinc-400">
-                  {facilities?.map((facility) => (
-                    <li className="">{facility}</li>
+                  {facilities?.map((facility, i) => (
+                    <li key={i}>{facility}</li>
                   ))}
                 </ul>
               </section>
@@ -192,7 +197,7 @@ export const Slideover = forwardRef(function Slideover(
               <section className="space-y-1">
                 <h3 className="text-2xl font-bold">Parkmöglichkeiten</h3>
                 <ul className="ml-6 list-disc text-zinc-600 dark:text-zinc-400">
-                  {parking_spots?.map((spot) => <li className="">{spot}</li>)}
+                  {parking_spots?.map((spot, i) => <li key={i}>{spot}</li>)}
                 </ul>
               </section>
             )}

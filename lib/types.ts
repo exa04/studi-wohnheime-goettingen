@@ -28,13 +28,13 @@ export type Dorm = {
 
   web_link: string;
 
-  apartment_types: Array<ApartmentType>;
+  apartment_types: Array<Apartment>;
 
   facilities: Array<string>;
   parking_spots: Array<string>;
 };
 
-export type ApartmentType = {
+export type Apartment = {
   housing_type: HousingType;
   verbose_housing_type: string;
   room_count: number;
@@ -50,4 +50,5 @@ export type ApartmentType = {
 export enum Application {
   SINGLE,
   GROUP,
+  NONE,
 }

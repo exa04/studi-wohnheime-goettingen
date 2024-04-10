@@ -1,4 +1,4 @@
-import { ApartmentType, Application, Dorm, HousingType } from "@/lib/types";
+import { Apartment, Application, Dorm, HousingType } from "@/lib/types";
 import cheerio from "cheerio";
 import axios from "axios";
 import { all_dorms } from "@/lib/search";
@@ -85,13 +85,29 @@ async function getDorm(id: number): Promise<Dorm> {
     next = next.next();
   }
 
-  let apartment_types: Array<ApartmentType> = [];
+  let apartment_types: Array<Apartment> = [];
   $(".content > .tabs-container")
     .find(".jqtab")
     .each((i, el) => {
       let rows = $(el).find("tr td");
       let waiting_period_str = $(rows[4]).text().replace("Monate", "");
       let waiting_period: number | [number, number] = 0;
+      let housing_type = HousingType.SINGLE;
+
+      const verbose_housing_type = $(rows[0]).text().toLowerCase();
+      if (verbose_housing_type.includes("doppel")) {
+        housing_type = HousingType.DOUBLE;
+      } else if (/einzelzimmer/.exec(verbose_housing_type)) {
+        housing_type = HousingType.GROUP;
+      } else if (/2er-/.exec(verbose_housing_type)) {
+        housing_type = HousingType.SHARED_2;
+      } else if (/3er-/.exec(verbose_housing_type)) {
+        housing_type = HousingType.SHARED_3;
+      } else if (/4er-/.exec(verbose_housing_type)) {
+        housing_type = HousingType.SHARED_4;
+      } else if (verbose_housing_type.includes("mit kind")) {
+        housing_type = HousingType.FAMILY;
+      }
 
       if (waiting_period_str.includes("-")) {
         waiting_period = [
@@ -103,10 +119,10 @@ async function getDorm(id: number): Promise<Dorm> {
       }
 
       apartment_types[i] = {
-        housing_type: HousingType.SINGLE,
-        verbose_housing_type: $(rows[0]).text(),
+        housing_type,
+        verbose_housing_type: $(rows[0]).text().trim(),
         room_count: Number.parseInt($(rows[1]).text()),
-        room_size: $(rows[0]).text(),
+        room_size: $(rows[2]).text().trim(),
         rent: Number.parseInt($(rows[3]).text().replace("Euro", "")),
         waiting_period,
         furnished: $(rows[5]).text().toLowerCase().includes("vollmöbliert"),
@@ -114,10 +130,12 @@ async function getDorm(id: number): Promise<Dorm> {
           .text()
           .split(",")
           .map((x) => x.trim()),
-        notices: $(rows[7]).text(),
+        notices: $(rows[7]).text().trim(),
         application: $(rows[8]).text().toLowerCase().includes("einzelbewerbung")
           ? Application.SINGLE
-          : Application.GROUP,
+          : $(rows[8]).text().toLowerCase().includes("gemeinsame")
+            ? Application.GROUP
+            : Application.NONE,
       };
     });
 

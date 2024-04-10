@@ -9,22 +9,20 @@ export enum HousingType {
 }
 
 export type DormResult = {
-  id: number;
+  slug: string;
   web_link: string;
   name: string | undefined;
   coordinates: [number, number];
   housing_types: Array<HousingType>;
-  rent: number | [number, number];
 };
 
 export type Dorm = {
-  id: number;
+  slug: string;
   name: string;
   summary: string;
   images: Array<string>;
 
   address: string;
-  coordinates: [number, number];
 
   web_link: string;
 

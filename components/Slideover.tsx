@@ -27,7 +27,7 @@ export type SlideoverRef = {
 };
 
 export const Slideover = forwardRef(function Slideover(
-  props: { id: number },
+  props: { slug: string },
   ref,
 ) {
   const [loading, setLoading] = useState(true);
@@ -55,20 +55,22 @@ export const Slideover = forwardRef(function Slideover(
   useEffect(() => {
     setOpen(true);
     setLoading(true);
-    const res = fetch(`/api/get/${props.id}`).then((res) => {
-      res.json().then((json: Dorm) => {
-        setTitle(json.name);
-        setSummary(json.summary);
-        setWebLink(json.web_link);
-        setApartmentTypes(json.apartment_types);
-        setImages(json.images);
-        setAddress(json.address);
-        setFacilities(json.facilities);
-        setParkingSpots(json.parking_spots);
-        setLoading(false);
-      });
-    });
-  }, [props.id]);
+    const res = fetch(`/api/get/${encodeURIComponent(props.slug)}`).then(
+      (res) => {
+        res.json().then((json: Dorm) => {
+          setTitle(json.name);
+          setSummary(json.summary);
+          setWebLink(json.web_link);
+          setApartmentTypes(json.apartment_types);
+          setImages(json.images);
+          setAddress(json.address);
+          setFacilities(json.facilities);
+          setParkingSpots(json.parking_spots);
+          setLoading(false);
+        });
+      },
+    );
+  }, [props.slug]);
 
   return (
     <div

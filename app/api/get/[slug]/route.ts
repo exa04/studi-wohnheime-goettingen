@@ -5,23 +5,22 @@ import { all_dorms } from "@/lib/search";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: number } },
+  { params }: { params: { slug: string } },
 ) {
-  let dorm = await getDorm(params.id);
+  let dorm = await getDorm(params.slug);
   return Response.json(dorm);
 }
 
-async function getDorm(id: number): Promise<Dorm> {
-  const web_link = all_dorms[id].web_link;
+async function getDorm(slug: string): Promise<Dorm> {
+  const web_link = `https://www.studentenwerk-goettingen.de/studentisches-wohnen/unsere-wohnheime/${slug}`;
 
   let dorm: Dorm = {
-    id,
+    slug,
     name: "",
     summary: "",
     images: [],
 
     address: "",
-    coordinates: [0, 0],
 
     web_link,
 

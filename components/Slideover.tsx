@@ -64,7 +64,7 @@ export const Slideover = forwardRef(function Slideover(
   return (
     <div
       data-open={open}
-      className="w-100svw fixed bottom-0 z-30 box-border h-[80svh] w-full bg-white shadow-2xl data-[open=false]:hidden dark:bg-zinc-950 md:top-0 md:h-svh md:max-w-lg lg:left-80 lg:z-10"
+      className="w-100svw fixed bottom-0 z-30 box-border h-[80svh] w-full border-r border-black/20 bg-white shadow-2xl shadow-black data-[open=false]:hidden dark:border-white/20 dark:bg-zinc-950 md:top-0 md:h-svh md:max-w-md lg:left-80 lg:z-10"
     >
       <div className="sticky z-20 flex h-16 w-full items-center justify-between border-b border-zinc-300/50 bg-zinc-50 px-4 dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex items-center gap-2">
@@ -77,32 +77,26 @@ export const Slideover = forwardRef(function Slideover(
             <ArrowLeftIcon className="h-[1.2rem] w-[1.2rem]" />
           </Button>
           {loading ? (
-            <Skeleton className="h-4 w-[250px]" />
+            <Skeleton className="h-4 w-[200px]" />
           ) : title != address ? (
             <h2>
-              <div className="-mb-1 text-sm font-bold">{title}</div>
-              <div className="text-xs text-zinc-600 dark:text-zinc-400">
+              <div className="-mb-1 font-bold">{title}</div>
+              <div className="text-sm text-zinc-600 dark:text-zinc-400">
                 {address}
               </div>
             </h2>
           ) : (
             <h2>
-              <div className="text-lg font-bold">{title}</div>
+              <div className="font-bold leading-tight">{title}</div>
             </h2>
           )}
         </div>
         <div className="flex items-center gap-2">
-          <a href={web_link} target="_blank">
-            <Button variant="ghost" size="icon">
-              <ExternalLinkIcon className="h-[1.2rem] w-[1.2rem]" />
-            </Button>
-          </a>
           <a
             href="https://ipack.studentenwerk-goettingen.de/wohnheimaufnahmeantrag.html"
             target="_blank"
           >
             <Button className="gap-2 max-sm:!px-3">
-              <InputIcon />
               <span className="max-sm:hidden">Bewerben</span>
             </Button>
           </a>
@@ -140,31 +134,35 @@ export const Slideover = forwardRef(function Slideover(
             <Skeleton className="h-4 w-[40%]" />
           </div>
         ) : (
-          <div className="space-y-6 px-6 py-6">
-            <div className="text-zinc-600 dark:text-zinc-400">{summary}</div>
-            {images.length > 1 && (
-              <div className={`flex gap-2`}>
-                {images.length > 1 &&
-                  images.slice(1).map((src) => (
-                    <Dialog key={src}>
-                      <DialogTrigger className="w-full shrink grow">
-                        <img
-                          alt="Weiteres Foto von dem Wohnheim"
-                          src={src}
-                          className="aspect-[3/2] rounded object-cover outline outline-1 -outline-offset-1 outline-black/20 dark:outline-white/20"
-                        />
-                      </DialogTrigger>
-                      <DialogContent className="h-full max-h-[90svh] w-full max-w-[90svw] overflow-hidden border-0 p-0">
-                        <img
-                          alt=""
-                          src={src}
-                          className="h-full w-full object-cover"
-                        />
-                      </DialogContent>
-                    </Dialog>
-                  ))}
+          <div className="space-y-6 px-6 pb-6 pt-4">
+            <div>
+              <div className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                {summary}
               </div>
-            )}
+              {images.length > 1 && (
+                <div className={`mt-4 flex gap-2`}>
+                  {images.length > 1 &&
+                    images.slice(1).map((src) => (
+                      <Dialog key={src}>
+                        <DialogTrigger className="w-full shrink grow">
+                          <img
+                            alt="Weiteres Foto von dem Wohnheim"
+                            src={src}
+                            className="aspect-[3/2] rounded object-cover outline outline-1 -outline-offset-1 outline-black/20 dark:outline-white/20"
+                          />
+                        </DialogTrigger>
+                        <DialogContent className="h-full max-h-[90svh] w-full max-w-[90svw] overflow-hidden border-0 p-0">
+                          <img
+                            alt=""
+                            src={src}
+                            className="h-full w-full object-cover"
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    ))}
+                </div>
+              )}
+            </div>
             <Button variant="link" className="mr-4 gap-2 px-0">
               <ExternalLinkIcon />
               In Google Maps anzeigen
@@ -176,15 +174,16 @@ export const Slideover = forwardRef(function Slideover(
               </Button>
             </a>
             <Separator />
-            <section className="space-y-1">
+            <section className="space-y-1 text-sm">
               <h3 className="text-2xl font-bold">Wohnformen</h3>
               <p className="text-zinc-600 dark:text-zinc-400">
                 Dieses Wohnheim bietet {apartment_types.length} verschiedene
                 Wohnformen an. W&auml;hle eine aus, um mehr zu ihr zu erfahren.{" "}
               </p>
+              <p>{JSON.stringify(apartment_types)}</p>
             </section>
             {facilities?.length != undefined && facilities.length > 0 && (
-              <section className="space-y-1">
+              <section className="space-y-1 text-sm">
                 <h3 className="text-2xl font-bold">Ausstattung</h3>
                 <ul className="ml-6 list-disc text-zinc-600 dark:text-zinc-400">
                   {facilities?.map((facility, i) => (
@@ -194,7 +193,7 @@ export const Slideover = forwardRef(function Slideover(
               </section>
             )}
             {facilities?.length != undefined && facilities.length > 0 && (
-              <section className="space-y-1">
+              <section className="space-y-1 text-sm">
                 <h3 className="text-2xl font-bold">Parkmöglichkeiten</h3>
                 <ul className="ml-6 list-disc text-zinc-600 dark:text-zinc-400">
                   {parking_spots?.map((spot, i) => <li key={i}>{spot}</li>)}

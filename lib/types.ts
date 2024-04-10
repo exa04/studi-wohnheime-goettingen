@@ -28,17 +28,20 @@ export type Dorm = {
 
   web_link: string;
 
-  apartment_types: Array<{
-    housing_type: HousingType;
-    room_count: number;
-    room_size: string;
-    rent: number | [number, number];
-    wating_period: number | [number, number];
-    furnished: boolean;
-    facilities: Array<string>;
-    notices: Array<string>;
-  }>;
+  apartment_types: Array<ApartmentType>;
 
   facilities: Array<string>;
   parking_spots: Array<string>;
+};
+
+export type ApartmentType = {
+  housing_type: HousingType;
+  verbose_housing_type: string;
+  room_count: number;
+  room_size: string;
+  rent: number | [number, number];
+  waiting_period: number | [number, number];
+  furnished: boolean;
+  facilities: Array<string>;
+  notices: Array<string>;
 };

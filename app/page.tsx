@@ -90,7 +90,7 @@ export default function Home() {
         </ScrollArea>
       </div>
       {focussed_dorm != -1 && <Slideover ref={slideover} id={focussed_dorm} />}
-      <div className="h-screen w-screen bg-zinc-500"></div>
+      <div className="h-screen w-screen bg-white dark:bg-zinc-900"></div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Dorm, HousingType } from "@/lib/types";
+import { ApartmentType, Dorm, HousingType } from "@/lib/types";
 import cheerio from "cheerio";
 import axios from "axios";
 import { all_dorms } from "@/lib/search";
@@ -84,6 +84,38 @@ async function getDorm(id: number): Promise<Dorm> {
     }
     next = next.next();
   }
+
+  let apartment_types: Array<ApartmentType> = [];
+  $(".content > .tabs-container")
+    .find(".jqtab")
+    .each((i, el) => {
+      let rows = $(el).find("tr td");
+      let waiting_period_str = $(rows[4]).text().replace("Monate", "");
+      let waiting_period: number | [number, number] = 0;
+
+      if (waiting_period_str.includes("-")) {
+        waiting_period = [
+          Number.parseInt(waiting_period_str.split("-")[0]),
+          Number.parseInt(waiting_period_str.split("-")[1]),
+        ];
+      } else {
+        waiting_period = Number.parseInt(waiting_period_str);
+      }
+
+      apartment_types[i] = {
+        housing_type: HousingType.SINGLE,
+        verbose_housing_type: $(rows[0]).text(),
+        room_count: Number.parseInt($(rows[1]).text()),
+        room_size: $(rows[0]).text(),
+        rent: Number.parseInt($(rows[3]).text().replace("Euro", "")),
+        waiting_period,
+        furnished: $(rows[5]).text().toLowerCase().includes("vollmöbliert"),
+        facilities: [],
+        notices: [],
+      };
+    });
+
+  dorm.apartment_types = apartment_types;
 
   return dorm;
 }

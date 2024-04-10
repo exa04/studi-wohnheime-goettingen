@@ -1,4 +1,4 @@
-import { ApartmentType, Dorm, HousingType } from "@/lib/types";
+import { ApartmentType, Application, Dorm, HousingType } from "@/lib/types";
 import cheerio from "cheerio";
 import axios from "axios";
 import { all_dorms } from "@/lib/search";
@@ -110,8 +110,14 @@ async function getDorm(id: number): Promise<Dorm> {
         rent: Number.parseInt($(rows[3]).text().replace("Euro", "")),
         waiting_period,
         furnished: $(rows[5]).text().toLowerCase().includes("vollmöbliert"),
-        facilities: [],
-        notices: [],
+        facilities: $(rows[6])
+          .text()
+          .split(",")
+          .map((x) => x.trim()),
+        notices: $(rows[7]).text(),
+        application: $(rows[8]).text().toLowerCase().includes("einzelbewerbung")
+          ? Application.SINGLE
+          : Application.GROUP,
       };
     });
 

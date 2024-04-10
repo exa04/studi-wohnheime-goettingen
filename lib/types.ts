@@ -43,5 +43,11 @@ export type ApartmentType = {
   waiting_period: number | [number, number];
   furnished: boolean;
   facilities: Array<string>;
-  notices: Array<string>;
+  notices: string;
+  application: Application;
 };
+
+export enum Application {
+  SINGLE,
+  GROUP,
+}

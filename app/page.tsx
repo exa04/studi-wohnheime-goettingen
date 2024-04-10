@@ -31,6 +31,7 @@ import {
   ListBulletIcon,
 } from "@radix-ui/react-icons";
 import {
+  MutableRefObject,
   forwardRef,
   useEffect,
   useImperativeHandle,
@@ -41,8 +42,15 @@ import { all_dorms } from "@/lib/search";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Slideover, SlideoverRef } from "@/components/Slideover";
 
+import mapboxgl from "mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
+import { useTheme } from "next-themes";
+
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiMjIzMjMwIiwiYSI6ImNsbHE5MDAxYTBkdmUzcnBva2duNHk2N2kifQ.XZf_VzTUdxuCA8UzUgkwTg";
+
 export default function Home() {
   const [results, set_results] = useState<Array<DormResult>>();
+  const { theme, setTheme } = useTheme();
 
   const [focussed_dorm, setFocussedDorm] = useState<string>();
 
@@ -53,12 +61,108 @@ export default function Home() {
   }
 
   useEffect(() => {
-    const res = fetch(`/api/search/`).then((res) => {
-      res.json().then((json: Array<DormResult>) => {
-        set_results(json);
+    if (!results || !theme) return;
+    let style = "mapbox://styles/mapbox/light-v11";
+    const dark_theme =
+      theme == "dark" ||
+      (theme == "system" &&
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches);
+    if (dark_theme) {
+      style = "mapbox://styles/mapbox/dark-v11";
+    }
+    let mb_map = new mapboxgl.Map({
+      container: mapContainer.current || ".map-container",
+      style,
+      center: [9.94, 51.546],
+      zoom: 12,
+      maxBounds: [
+        [9.811834, 51.45219],
+        [10.081352, 51.608504],
+      ],
+    });
+
+    mb_map.on("load", () => {
+      mb_map.addSource("dorms", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: results.map((r) => {
+            return {
+              type: "Feature",
+              properties: {
+                slug: r.slug,
+                description:
+                  "<b class='text-sm'>" +
+                  r.name +
+                  "</b><br><div class='text-xs'>" +
+                  r.housing_types.join("<br>") +
+                  "</div>",
+              },
+              geometry: {
+                type: "Point",
+                coordinates: r.coordinates,
+              },
+            };
+          }),
+        },
+      });
+      mb_map.addLayer({
+        id: "dorms",
+        type: "circle",
+        source: "dorms",
+        paint: {
+          "circle-color": dark_theme ? "#3b82f6" : "#2563eb",
+          "circle-radius": 6,
+          "circle-stroke-width": 2,
+          "circle-stroke-color": dark_theme ? "#ffffff" : "#1e40af",
+        },
+      });
+
+      const popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+      });
+
+      mb_map.on("mouseenter", "dorms", (e) => {
+        mb_map.getCanvas().style.cursor = "pointer";
+
+        if (!e.features) return;
+        // @ts-ignore
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const description = e.features[0].properties?.description;
+
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        popup.setLngLat(coordinates).setHTML(description).addTo(mb_map);
+      });
+
+      mb_map.on("click", "dorms", (e) => {
+        if (!e.features || !e.features[0].properties) return;
+        openSlideover(e.features[0].properties.slug);
+      });
+
+      mb_map.on("mouseleave", "dorms", () => {
+        mb_map.getCanvas().style.cursor = "";
+        popup.remove();
+      });
+    });
+
+    map.current = mb_map;
+  }, [theme, results]);
+
+  useEffect(() => {
+    fetch(`/api/search/`).then((res) => {
+      res.json().then((dorm_results: Array<DormResult>) => {
+        set_results(dorm_results);
       });
     });
   }, []);
+
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map>();
 
   return (
     <div>
@@ -125,7 +229,10 @@ export default function Home() {
         </ScrollArea>
       </div>
       {focussed_dorm && <Slideover ref={slideover} slug={focussed_dorm} />}
-      <div className="h-screen w-screen bg-white dark:bg-zinc-900"></div>
+      <div
+        ref={mapContainer}
+        className="map-container h-screen w-screen max-md:h-[34svh]"
+      />
     </div>
   );
 }

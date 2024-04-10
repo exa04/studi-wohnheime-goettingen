@@ -75,45 +75,23 @@ export const Slideover = forwardRef(function Slideover(
   return (
     <div
       data-open={open}
-      className="w-100svw fixed bottom-0 z-30 box-border h-[80svh] w-full border-r border-black/20 bg-white shadow-2xl shadow-black data-[open=false]:hidden dark:border-white/20 dark:bg-zinc-950 md:top-0 md:h-svh md:max-w-md lg:left-80 lg:z-10"
+      className="w-100svw fixed bottom-0 z-30 box-border flex h-[90svh] w-full flex-col overflow-hidden rounded-t-[1.125rem] border-black/20 bg-white shadow-2xl transition-transform dark:border-white/20 dark:bg-zinc-950 dark:shadow-black max-md:shadow-black max-md:data-[open=false]:translate-y-full md:top-0 md:h-svh md:max-w-md md:rounded-t-none md:border-r md:data-[open=false]:-translate-x-full lg:left-80 lg:z-10"
     >
-      <div className="sticky z-20 flex h-16 w-full items-center justify-between border-b border-zinc-300/50 bg-zinc-50 px-4 dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            color="blue"
-            onClick={() => setOpen(false)}
-          >
-            <ArrowLeftIcon className="h-[1.2rem] w-[1.2rem]" />
+      <div className="flex w-full items-center justify-between gap-2 border-b border-zinc-200 bg-zinc-100 p-3 dark:border-zinc-800 dark:bg-zinc-900 md:h-16 md:px-4 md:py-0">
+        <Button variant="secondary" size="icon" onClick={() => setOpen(false)}>
+          <ArrowLeftIcon className="h-[1.2rem] w-[1.2rem]" />
+        </Button>
+        <div className="shrink grow" />
+        <a href={web_link}>
+          <Button variant="secondary" size="icon">
+            <ExternalLinkIcon className="h-[1.2rem] w-[1.2rem]" />
           </Button>
-          {loading ? (
-            <Skeleton className="h-4 w-[200px]" />
-          ) : title != address ? (
-            <h2>
-              <div className="-mb-1 font-bold">{title}</div>
-              <div className="text-sm text-zinc-600 dark:text-zinc-400">
-                {address}
-              </div>
-            </h2>
-          ) : (
-            <h2>
-              <div className="font-bold leading-tight">{title}</div>
-            </h2>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <a
-            href="https://ipack.studentenwerk-goettingen.de/wohnheimaufnahmeantrag.html"
-            target="_blank"
-          >
-            <Button className="gap-2 max-sm:!px-3">
-              <span className="max-sm:hidden">Bewerben</span>
-            </Button>
-          </a>
-        </div>
+        </a>
+        <a href={web_link}>
+          <Button variant="secondary">Bewerben</Button>
+        </a>
       </div>
-      <ScrollArea className="h-[calc(100%_-_4rem)] w-full">
+      <ScrollArea className="h-full w-full">
         {loading ? (
           <Skeleton className="aspect-[3/2] w-full !rounded-none" />
         ) : (
@@ -137,17 +115,25 @@ export const Slideover = forwardRef(function Slideover(
           )
         )}
         {loading ? (
-          <div className="space-y-2 px-6 py-6">
-            <Skeleton className="h-4" />
-            <Skeleton className="h-4" />
-            <Skeleton className="h-4" />
-            <Skeleton className="h-4" />
-            <Skeleton className="h-4 w-[40%]" />
+          <div className="box-border space-y-6 px-6 pb-6 pt-4">
+            <div className="h-32 space-y-2">
+              <Skeleton className="h-6 w-[60%]" />
+              <Skeleton className="h-4" />
+              <Skeleton className="h-4" />
+              <Skeleton className="h-4" />
+              <Skeleton className="h-4 w-[40%]" />
+            </div>
           </div>
         ) : (
           <div className="box-border space-y-6 px-6 pb-6 pt-4">
-            <div>
-              <div className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <ReadMore>
+              <h2 className="text-2xl font-bold">{title}</h2>
+              {address != title && (
+                <div className="text-zinc-600 dark:text-zinc-400">
+                  {address}
+                </div>
+              )}
+              <div className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                 {summary}
               </div>
               {images.length > 1 && (
@@ -173,20 +159,12 @@ export const Slideover = forwardRef(function Slideover(
                     ))}
                 </div>
               )}
-            </div>
-            <Button variant="link" className="mr-4 gap-2 px-0">
-              <ExternalLinkIcon />
-              In Google Maps anzeigen
-            </Button>
-            <a href={web_link} target="_blank">
-              <Button variant="link" className="gap-2 px-0">
-                <ExternalLinkIcon />
-                Original anzeigen
-              </Button>
-            </a>
+            </ReadMore>
             <Separator />
             <section className="space-y-2 text-sm">
-              <h3 className="text-2xl font-bold">Wohnformen</h3>
+              <h3 className="text-xl font-semibold tracking-tight">
+                Wohnformen
+              </h3>
               <Tabs defaultValue="0" className="w-full">
                 <TabsList className="flex w-full justify-stretch">
                   {apartment_types?.map((t, i) => (
@@ -217,14 +195,14 @@ export const Slideover = forwardRef(function Slideover(
                   <TabsContent value={i.toString()} key={i}>
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-base">
+                        <CardTitle className="text-base font-bold">
                           {t.verbose_housing_type}
                         </CardTitle>
                         {(t.application != Application.NONE || t.notices) && (
                           <CardDescription className="space-y-2">
                             {t.application == Application.SINGLE && (
                               <Alert>
-                                <AlertTitle className="flex items-center gap-2">
+                                <AlertTitle className="mb-0 flex items-center gap-2">
                                   <ExclamationTriangleIcon />
                                   Bitte einzeln bewerben!
                                 </AlertTitle>
@@ -244,8 +222,8 @@ export const Slideover = forwardRef(function Slideover(
                       </CardHeader>
                       <CardContent>
                         <div className="mb-2 grid h-24 w-full grid-cols-2 gap-2">
-                          <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                            <div className="text-lg">
+                          <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
+                            <div className="text-lg font-semibold tracking-tight">
                               {Array.isArray(t.rent)
                                 ? t.rent[0] + "-" + t.rent[1]
                                 : t.rent}
@@ -255,8 +233,8 @@ export const Slideover = forwardRef(function Slideover(
                               Mietpreis
                             </div>
                           </div>
-                          <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                            <div className="text-lg">
+                          <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
+                            <div className="text-lg font-semibold tracking-tight">
                               {Array.isArray(t.waiting_period)
                                 ? t.waiting_period[0] +
                                   "-" +
@@ -268,24 +246,28 @@ export const Slideover = forwardRef(function Slideover(
                             </div>
                           </div>
                         </div>
-                        <div className="mb-4 grid h-20 w-full grid-cols-3 gap-2">
-                          <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                            <div className="text-base">
+                        <div className="mb-4 grid h-16 w-full grid-cols-3 gap-2 sm:h-20">
+                          <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
+                            <div className="text-sm font-semibold sm:text-base">
                               {t.furnished ? "Nicht" : "Voll"}
                             </div>
-                            <div className="text-zinc-600 dark:text-zinc-400">
+                            <div className="text-xs text-zinc-600 dark:text-zinc-400 sm:text-sm">
                               Möbliert
                             </div>
                           </div>
-                          <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                            <div className="text-base">{t.room_count}</div>
-                            <div className="text-zinc-600 dark:text-zinc-400">
+                          <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
+                            <div className="text-sm font-semibold sm:text-base">
+                              {t.room_count}
+                            </div>
+                            <div className="text-xs text-zinc-600 dark:text-zinc-400 sm:text-sm">
                               Zimmer
                             </div>
                           </div>
-                          <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
-                            <div className="text-base">{t.room_size}</div>
-                            <div className="text-zinc-600 dark:text-zinc-400">
+                          <div className="flex flex-col items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-900">
+                            <div className="text-sm font-semibold tracking-tighter sm:text-base">
+                              {t.room_size}
+                            </div>
+                            <div className="text-xs text-zinc-600 dark:text-zinc-400 sm:text-sm">
                               Zimmergröße
                             </div>
                           </div>
@@ -308,7 +290,9 @@ export const Slideover = forwardRef(function Slideover(
             </section>
             {facilities?.length != undefined && facilities.length > 0 && (
               <section className="space-y-1 text-sm">
-                <h3 className="text-2xl font-bold">Ausstattung</h3>
+                <h3 className="text-xl font-semibold tracking-tight">
+                  Ausstattung
+                </h3>
                 <ul className="ml-6 list-disc text-zinc-600 dark:text-zinc-400">
                   {facilities?.map((facility, i) => (
                     <li key={i}>{facility}</li>
@@ -318,7 +302,9 @@ export const Slideover = forwardRef(function Slideover(
             )}
             {facilities?.length != undefined && facilities.length > 0 && (
               <section className="space-y-1 text-sm">
-                <h3 className="text-2xl font-bold">Parkmöglichkeiten</h3>
+                <h3 className="text-xl font-semibold tracking-tight">
+                  Parkmöglichkeiten
+                </h3>
                 <ul className="ml-6 list-disc text-zinc-600 dark:text-zinc-400">
                   {parking_spots?.map((spot, i) => <li key={i}>{spot}</li>)}
                 </ul>
@@ -330,3 +316,37 @@ export const Slideover = forwardRef(function Slideover(
     </div>
   );
 });
+
+function ReadMore(props: { children: React.ReactNode }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div
+      data-expanded={expanded}
+      className="relative max-h-[1200px] overflow-hidden transition-all data-[expanded=false]:max-h-32"
+    >
+      {!expanded && (
+        <Button
+          className="absolute bottom-0 left-1/2 z-10 -translate-x-1/2"
+          variant="link"
+          onClick={() => setExpanded(true)}
+        >
+          Mehr anzeigen
+        </Button>
+      )}
+      {!expanded && (
+        <div className="absolute h-full w-full bg-gradient-to-b from-transparent from-30% to-white to-90% dark:to-zinc-950" />
+      )}
+      {props.children}
+      {expanded && (
+        <Button
+          variant="link"
+          className="mt-2 px-0"
+          onClick={() => setExpanded(false)}
+        >
+          Weniger anzeigen
+        </Button>
+      )}
+    </div>
+  );
+}

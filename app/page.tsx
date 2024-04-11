@@ -62,7 +62,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!results || !theme) return;
-    let style = "mapbox://styles/mapbox/light-v11";
+    let style = "mapbox://styles/mapbox/standard";
     const dark_theme =
       theme == "dark" ||
       (theme == "system" &&
@@ -112,10 +112,10 @@ export default function Home() {
         type: "circle",
         source: "dorms",
         paint: {
-          "circle-color": dark_theme ? "#3b82f6" : "#2563eb",
+          "circle-color": dark_theme ? "#3b82f6" : "#000000",
           "circle-radius": 6,
           "circle-stroke-width": 2,
-          "circle-stroke-color": dark_theme ? "#ffffff" : "#1e40af",
+          "circle-stroke-color": "#ffffff",
         },
       });
 
@@ -174,7 +174,7 @@ export default function Home() {
             <ModeToggle />
           </div>
         </div>
-        <ScrollArea className="h-full shrink">
+        <div className="h-full shrink overflow-auto">
           {results ? (
             results.map((result) => (
               <div
@@ -226,7 +226,7 @@ export default function Home() {
               </div>
             </div>
           )}
-        </ScrollArea>
+        </div>
       </div>
       {focussed_dorm && <Slideover ref={slideover} slug={focussed_dorm} />}
       <div

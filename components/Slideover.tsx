@@ -30,18 +30,9 @@ export const Slideover = forwardRef(function Slideover(
   props: { slug: string },
   ref,
 ) {
-  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
 
-  const [title, setTitle] = useState("");
-  const [summary, setSummary] = useState("");
-  const [web_link, setWebLink] = useState("");
-  const [apartment_types, setApartmentTypes] = useState<Array<Apartment>>();
-  const [images, setImages] = useState<Array<string>>(Array);
-  const [address, setAddress] = useState("");
-
-  const [facilities, setFacilities] = useState<Array<string>>();
-  const [parking_spots, setParkingSpots] = useState<Array<string>>();
+  const [dorm, setDorm] = useState<Dorm>();
 
   useImperativeHandle(ref, () => ({
     open: () => {
@@ -54,19 +45,11 @@ export const Slideover = forwardRef(function Slideover(
 
   useEffect(() => {
     setOpen(true);
-    setLoading(true);
+    setDorm(undefined);
     const res = fetch(`/api/get/${encodeURIComponent(props.slug)}`).then(
       (res) => {
-        res.json().then((json: Dorm) => {
-          setTitle(json.name);
-          setSummary(json.summary);
-          setWebLink(json.web_link);
-          setApartmentTypes(json.apartment_types);
-          setImages(json.images);
-          setAddress(json.address);
-          setFacilities(json.facilities);
-          setParkingSpots(json.parking_spots);
-          setLoading(false);
+        res.json().then((res_dorm: Dorm) => {
+          setDorm(res_dorm);
         });
       },
     );
@@ -75,38 +58,40 @@ export const Slideover = forwardRef(function Slideover(
   return (
     <div
       data-open={open}
-      className="w-100svw fixed bottom-0 z-30 box-border flex h-[90svh] w-full flex-col overflow-hidden rounded-t-[1.125rem] border-black/20 bg-white shadow-2xl transition-transform dark:border-white/20 dark:bg-zinc-950 dark:shadow-black max-md:shadow-black max-md:data-[open=false]:translate-y-full md:top-0 md:h-svh md:max-w-md md:rounded-t-none md:border-r md:data-[open=false]:-translate-x-full lg:left-80 lg:z-10"
+      className="fixed z-30 box-border flex h-[90svh] w-full flex-col overflow-hidden rounded-t-[1.125rem] border-black/20 bg-white shadow-2xl transition-transform dark:border-white/20 dark:bg-zinc-950 dark:shadow-black max-md:bottom-0 max-md:shadow-black max-md:data-[open=false]:translate-y-full md:top-0 md:h-svh md:max-h-svh md:max-w-md md:rounded-t-none md:border-r md:data-[open=false]:translate-x-[calc(-100%-4rem)] lg:left-80 lg:z-10 lg:m-4 lg:h-auto lg:max-h-[calc(100svh-2rem)] lg:rounded-[1.125rem] lg:border lg:bg-white/80 lg:backdrop-blur-xl lg:backdrop-saturate-150 lg:dark:bg-zinc-950/30"
     >
-      <div className="flex w-full items-center justify-between gap-2 border-b border-zinc-200 bg-zinc-100 p-3 dark:border-zinc-800 dark:bg-zinc-900 md:h-16 md:px-4 md:py-0">
-        <Button variant="secondary" size="icon" onClick={() => setOpen(false)}>
+      <div className="flex w-full shrink-0 items-center justify-between gap-2 border-b border-zinc-200 bg-zinc-100 p-3 dark:border-zinc-800 dark:bg-zinc-900 md:h-16 md:px-4 md:py-0 lg:h-auto lg:px-3 lg:py-3">
+        <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
           <ArrowLeftIcon className="h-[1.2rem] w-[1.2rem]" />
         </Button>
         <div className="shrink grow" />
-        <a href={web_link}>
-          <Button variant="secondary" size="icon">
+        <a href={dorm?.web_link}>
+          <Button variant="ghost" size="icon">
             <ExternalLinkIcon className="h-[1.2rem] w-[1.2rem]" />
           </Button>
         </a>
-        <a href={web_link}>
-          <Button variant="secondary">Bewerben</Button>
+        <a href={dorm?.web_link}>
+          <Button variant="secondary" className="shadow-none dark:shadow-md">
+            Bewerben
+          </Button>
         </a>
       </div>
-      <ScrollArea className="h-full w-full">
-        {loading ? (
+      <div className="h-auto max-h-full w-full shrink grow overflow-auto">
+        {!dorm ? (
           <Skeleton className="aspect-[3/2] w-full !rounded-none" />
         ) : (
-          images[0] != undefined && (
+          dorm.images[0] != undefined && (
             <Dialog>
               <DialogTrigger>
                 <img
-                  src={images[0]}
+                  src={dorm.images[0]}
                   className="aspect-[3/2] w-full object-cover"
-                  alt={"Foto von " + title}
+                  alt={"Foto von " + dorm.name}
                 />
               </DialogTrigger>
               <DialogContent className="max-h-[90svh] max-w-[90svw] overflow-hidden border-0 p-0">
                 <img
-                  src={images[0]}
+                  src={dorm.images[0]}
                   className="h-full max-h-[90svh] w-full max-w-[90svw] object-contain"
                   alt=""
                 />
@@ -114,7 +99,7 @@ export const Slideover = forwardRef(function Slideover(
             </Dialog>
           )
         )}
-        {loading ? (
+        {!dorm ? (
           <div className="box-border space-y-6 px-6 pb-6 pt-4">
             <div className="h-32 space-y-2">
               <Skeleton className="h-6 w-[60%]" />
@@ -127,19 +112,19 @@ export const Slideover = forwardRef(function Slideover(
         ) : (
           <div className="box-border space-y-6 px-6 pb-6 pt-4">
             <ReadMore>
-              <h2 className="text-2xl font-bold">{title}</h2>
-              {address != title && (
+              <h2 className="text-2xl font-bold tracking-tight">{dorm.name}</h2>
+              {dorm.address != dorm.name && (
                 <div className="text-zinc-600 dark:text-zinc-400">
-                  {address}
+                  {dorm.address}
                 </div>
               )}
               <div className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-                {summary}
+                {dorm.summary}
               </div>
-              {images.length > 1 && (
+              {dorm.images.length > 1 && (
                 <div className={`mt-4 flex gap-2`}>
-                  {images.length > 1 &&
-                    images.slice(1).map((src) => (
+                  {dorm.images.length > 1 &&
+                    dorm.images.slice(1).map((src) => (
                       <Dialog key={src}>
                         <DialogTrigger className="w-full shrink grow">
                           <img
@@ -167,10 +152,10 @@ export const Slideover = forwardRef(function Slideover(
               </h3>
               <Tabs defaultValue="0" className="w-full">
                 <TabsList className="flex w-full justify-stretch">
-                  {apartment_types?.map((t, i) => (
+                  {dorm.apartment_types?.map((t, i) => (
                     <TabsTrigger
                       value={i.toString()}
-                      key={i.toString()}
+                      key={t.verbose_housing_type}
                       className="w-full grow"
                     >
                       {t.housing_type == HousingType.SINGLE
@@ -191,8 +176,11 @@ export const Slideover = forwardRef(function Slideover(
                     </TabsTrigger>
                   ))}
                 </TabsList>
-                {apartment_types?.map((t, i) => (
-                  <TabsContent value={i.toString()} key={i}>
+                {dorm.apartment_types?.map((t, i) => (
+                  <TabsContent
+                    value={i.toString()}
+                    key={t.verbose_housing_type}
+                  >
                     <Card>
                       <CardHeader>
                         <CardTitle className="text-base font-bold">
@@ -288,31 +276,35 @@ export const Slideover = forwardRef(function Slideover(
                 ))}
               </Tabs>
             </section>
-            {facilities?.length != undefined && facilities.length > 0 && (
-              <section className="space-y-1 text-sm">
-                <h3 className="text-xl font-semibold tracking-tight">
-                  Ausstattung
-                </h3>
-                <ul className="ml-6 list-disc text-zinc-600 dark:text-zinc-400">
-                  {facilities?.map((facility, i) => (
-                    <li key={i}>{facility}</li>
-                  ))}
-                </ul>
-              </section>
-            )}
-            {facilities?.length != undefined && facilities.length > 0 && (
-              <section className="space-y-1 text-sm">
-                <h3 className="text-xl font-semibold tracking-tight">
-                  Parkmöglichkeiten
-                </h3>
-                <ul className="ml-6 list-disc text-zinc-600 dark:text-zinc-400">
-                  {parking_spots?.map((spot, i) => <li key={i}>{spot}</li>)}
-                </ul>
-              </section>
-            )}
+            {dorm.facilities?.length != undefined &&
+              dorm.facilities.length > 0 && (
+                <section className="space-y-1 text-sm">
+                  <h3 className="text-xl font-semibold tracking-tight">
+                    Ausstattung
+                  </h3>
+                  <ul className="ml-6 list-disc text-zinc-600 dark:text-zinc-400">
+                    {dorm.facilities?.map((facility, i) => (
+                      <li key={i}>{facility}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+            {dorm.parking_spots?.length != undefined &&
+              dorm.parking_spots.length > 0 && (
+                <section className="space-y-1 text-sm">
+                  <h3 className="text-xl font-semibold tracking-tight">
+                    Parkmöglichkeiten
+                  </h3>
+                  <ul className="ml-6 list-disc text-zinc-600 dark:text-zinc-400">
+                    {dorm.parking_spots?.map((spot, i) => (
+                      <li key={i}>{spot}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
           </div>
         )}
-      </ScrollArea>
+      </div>
     </div>
   );
 });
@@ -323,7 +315,7 @@ function ReadMore(props: { children: React.ReactNode }) {
   return (
     <div
       data-expanded={expanded}
-      className="relative max-h-[1200px] overflow-hidden transition-all data-[expanded=false]:max-h-32"
+      className="relative overflow-hidden data-[expanded=false]:h-32"
     >
       {!expanded && (
         <Button
@@ -334,10 +326,16 @@ function ReadMore(props: { children: React.ReactNode }) {
           Mehr anzeigen
         </Button>
       )}
-      {!expanded && (
-        <div className="absolute h-full w-full bg-gradient-to-b from-transparent from-30% to-white to-90% dark:to-zinc-950" />
-      )}
-      {props.children}
+      <div
+        className="h-full"
+        style={{
+          maskImage: expanded
+            ? ""
+            : "linear-gradient(to bottom, black 30%, transparent)",
+        }}
+      >
+        {props.children}
+      </div>
       {expanded && (
         <Button
           variant="link"

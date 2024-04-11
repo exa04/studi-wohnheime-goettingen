@@ -93,20 +93,28 @@ async function getDorm(slug: string): Promise<Dorm> {
       let waiting_period: number | [number, number] = 0;
       let housing_type = HousingType.SINGLE;
 
-      const verbose_housing_type = $(rows[0]).text().toLowerCase();
-      if (verbose_housing_type.includes("doppel")) {
+      let lc_housing_type = $(rows[0]).text().toLowerCase();
+      if (lc_housing_type.includes("doppel")) {
         housing_type = HousingType.DOUBLE;
-      } else if (/einzelzimmer/.exec(verbose_housing_type)) {
+      } else if (/einzelzimmer/.exec(lc_housing_type)) {
         housing_type = HousingType.GROUP;
-      } else if (/2er-/.exec(verbose_housing_type)) {
+      } else if (/2er-/.exec(lc_housing_type)) {
         housing_type = HousingType.SHARED_2;
-      } else if (/3er-/.exec(verbose_housing_type)) {
+      } else if (/3er-/.exec(lc_housing_type)) {
         housing_type = HousingType.SHARED_3;
-      } else if (/4er-/.exec(verbose_housing_type)) {
+      } else if (/4er-/.exec(lc_housing_type)) {
         housing_type = HousingType.SHARED_4;
-      } else if (verbose_housing_type.includes("mit kind")) {
+      } else if (lc_housing_type.includes("mit kind")) {
         housing_type = HousingType.FAMILY;
       }
+
+      const verbose_housing_type_re = /(.*)\(.*\)/.exec(
+        $(rows[0]).text().trim(),
+      );
+
+      let verbose_housing_type = verbose_housing_type_re
+        ? verbose_housing_type_re[1]
+        : $(rows[0]).text().trim();
 
       if (waiting_period_str.includes("-")) {
         waiting_period = [
@@ -119,7 +127,7 @@ async function getDorm(slug: string): Promise<Dorm> {
 
       apartment_types[i] = {
         housing_type,
-        verbose_housing_type: $(rows[0]).text().trim(),
+        verbose_housing_type,
         room_count: Number.parseInt($(rows[1]).text()),
         room_size: $(rows[2]).text().trim(),
         rent: Number.parseInt($(rows[3]).text().replace("Euro", "")),

@@ -41,9 +41,9 @@ export const all_dorms: Array<DormResult> = [
     housing_types: [HousingType.GROUP],
   },
   {
-    slug: "studentenwerk-goettingen-wohnheim-arndtstrasse-9",
+    slug: "studierendenwerk-goettingen-wohnheim-arndtstrasse-9",
     web_link:
-      "/studentisches-wohnen/unsere-wohnheime/studentenwerk-goettingen-wohnheim-arndtstrasse-9",
+      "/studentisches-wohnen/unsere-wohnheime/studierendenwerk-goettingen-wohnheim-arndtstrasse-9",
     name: "Arndtstraße 9",
     coordinates: [9.932814, 51.546633],
     housing_types: [HousingType.GROUP],

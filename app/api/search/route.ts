@@ -7,9 +7,9 @@ export const revalidate = 3600;
 
 export async function GET() {
   const res = await axios.get(
-    "https://www.studentenwerk-goettingen.de/studentisches-wohnen/unsere-wohnheime",
+    "https://www.studierendenwerk-goettingen.de/studentisches-wohnen/unsere-wohnheime",
   );
-  if (res.status != 200) throw Error("Couldn't reach Studentenwerk Website");
+  if (res.status != 200) throw Error("Couldn't reach studierendenwerk Website");
   const data = res.data;
   const $ = cheerio.load(data);
 

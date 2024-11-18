@@ -12,7 +12,7 @@ export async function GET(
 }
 
 async function getDorm(slug: string): Promise<Dorm> {
-  const web_link = `https://www.studentenwerk-goettingen.de/studentisches-wohnen/unsere-wohnheime/${slug}`;
+  const web_link = `https://www.studierendenwerk-goettingen.de/studentisches-wohnen/unsere-wohnheime/${slug}`;
 
   let dorm: Dorm = {
     slug,
@@ -31,7 +31,7 @@ async function getDorm(slug: string): Promise<Dorm> {
   };
 
   let res = await axios.get(web_link);
-  if (res.status != 200) throw Error("Couldn't reach Studentenwerk Website");
+  if (res.status != 200) throw Error("Couldn't reach studierendenwerk Website");
 
   let data = res.data;
   const $ = cheerio.load(data);
@@ -56,7 +56,7 @@ async function getDorm(slug: string): Promise<Dorm> {
   dorm.images = $(".content > div > .ce-textpic img")
     .map(
       (i: any, element: any) =>
-        "https://www.studentenwerk-goettingen.de" + element.attribs.src,
+        "https://www.studierendenwerk-goettingen.de" + element.attribs.src,
     )
     .toArray();
 

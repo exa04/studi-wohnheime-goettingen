@@ -2,32 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+.mapboxgl-canvas-container.mapboxgl-interactive, .mapboxgl-ctrl-group button.mapboxgl-ctrl-compass {
+    cursor: default !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.mapboxgl-canvas-container.mapboxgl-interactive:active, .mapboxgl-ctrl-group button.mapboxgl-ctrl-compass:active {
+    cursor: dragging !important;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.mapboxgl-popup-content {
+    @apply text-black bg-zinc-50 dark:text-zinc-100 dark:bg-zinc-600 !px-2 !py-1;
 }
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.mapboxgl-popup-tip {
+    @apply border-t-zinc-50 dark:border-t-zinc-600;
 }
